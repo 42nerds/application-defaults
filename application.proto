@@ -1,0 +1,60 @@
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+
+message Application {
+    string name = 1;
+    string path = 2;
+    string self_url = 3;
+    oneof icon {
+        bytes image_data = 4;
+        string icon_url = 5;
+    }
+    message MenuItem {
+        string text = 1;
+        string action = 2;
+        string icon = 3;
+        repeated MenuItem submenu_items = 4;
+    }
+    repeated MenuItem menu_items = 6;
+    repeated View views = 7;
+}
+
+message Applications {
+    repeated Application applications = 1;
+}
+
+message ViewRequest {
+    string view_name = 1;
+    message Param {
+        string key = 1;
+        string value = 2;
+    }
+    repeated Param parameters = 2;
+}
+
+message ViewResponse {
+    View view = 1;
+}
+
+message View {
+    string name = 1;
+    string title = 2;
+    message Button {
+        string text = 1;
+        string theme = 2;
+        string icon = 3;
+        string action = 4;
+    }
+
+    repeated Button action_buttons = 3;
+}
+
+service MetadataService {
+    rpc GetApplications (google.protobuf.Empty) returns (Applications);
+}
+
+service ApplicationService {
+    rpc GetMetadata (google.protobuf.Empty) returns (Application);
+    rpc GetView (ViewRequest) returns (ViewResponse);
+}
